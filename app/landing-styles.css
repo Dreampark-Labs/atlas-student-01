@@ -1,0 +1,124 @@
+/* Landing Page Custom Styles */
+
+/* Modern button hover effects */
+.modern-button {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.modern-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Gradient button styles */
+.gradient-button {
+  background: linear-gradient(135deg, #5e60ce, #7400b8);
+  color: white;
+  border: none;
+}
+
+.gradient-button:hover {
+  background: linear-gradient(135deg, #4c4fb8, #6200a0);
+}
+
+/* Badge styles */
+.modern-badge {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Card hover effects */
+.feature-card {
+  border-radius: 1rem;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .mobile-stack {
+    flex-direction: column;
+  }
+  
+  .mobile-padding {
+    padding: 20px;
+  }
+}
+
+/* Trust indicator styling */
+.trust-indicator {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.trust-indicator svg {
+  margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Hero section enhancements */
+.hero-title {
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #6b7280;
+}
+
+/* CTA section styling */
+.cta-section {
+  background: linear-gradient(to right, #5e60ce, #7400b8);
+}
+
+.cta-button {
+  background: white;
+  color: #7400b8;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease-in-out;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  background: #f9fafb;
+}

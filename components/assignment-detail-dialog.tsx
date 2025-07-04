@@ -642,51 +642,52 @@ export function AssignmentDetailDialog({
       // If it's a file stored in Convex storage with fileId
       if (file.fileId) {
         try {
-          // Use the Convex HTTP action to get the file URL
-          const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_URL?.replace('.convex.cloud', '.convex.site') || 'https://avid-cow-972.convex.site';
-          const httpActionUrl = `${convexSiteUrl}/get-file-url`;
-          
-          const response = await fetch(httpActionUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              storageId: file.fileId,
-              userId: userId,
-            }),
+          // Use Convex query to get the file URL
+          const fileUrl = await new Promise<string | null>((resolve, reject) => {
+            // Create a temporary query to get the file URL
+            fetch('/api/get-file-url', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                storageId: file.fileId,
+                userId: userId,
+              }),
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.url) {
+                resolve(data.url);
+              } else {
+                reject(new Error(data.error || 'Failed to get file URL'));
+              }
+            })
+            .catch(reject);
           });
           
-          if (response.ok) {
-            const data = await response.json();
-            const fileUrl = data.url;
+          if (fileUrl) {
+            // Try to open file in a new window
+            const newWindow = window.open(fileUrl, '_blank', 'noopener,noreferrer');
             
-            if (fileUrl) {
-              // Try to open file in a new window
-              const newWindow = window.open(fileUrl, '_blank', 'noopener,noreferrer');
+            if (!newWindow) {
+              // If popup is blocked, create a clickable link
+              const link = document.createElement('a');
+              link.href = fileUrl;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              link.click();
               
-              if (!newWindow) {
-                // If popup is blocked, create a clickable link
-                const link = document.createElement('a');
-                link.href = fileUrl;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.click();
-                
-                toast({
-                  title: "File Opening",
-                  description: "If the file didn't open, please check your popup blocker settings.",
-                });
-              }
-            } else {
-              throw new Error("No URL returned from HTTP action");
+              toast({
+                title: "File Opening",
+                description: "If the file didn't open, please check your popup blocker settings.",
+              });
             }
           } else {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP ${response.status}`);
+            throw new Error("No URL returned");
           }
         } catch (fetchError) {
-          console.error("Error calling HTTP action:", fetchError);
+          console.error("Error getting file URL:", fetchError);
           toast({
             title: "Access Denied",
             description: "You don't have permission to view this file, or it no longer exists.",
@@ -696,7 +697,20 @@ export function AssignmentDetailDialog({
       } 
       // If it's a file with a direct URL (legacy or external files)
       else if (file.url) {
-        const fileUrl = file.url.startsWith('http') ? file.url : `${window.location.origin}${file.url}`;
+        // Fix URL construction to prevent malformed URLs
+        let fileUrl: string;
+        
+        if (file.url.startsWith('http://') || file.url.startsWith('https://')) {
+          // Already a complete URL
+          fileUrl = file.url;
+        } else if (file.url.startsWith('/')) {
+          // Absolute path - add origin
+          fileUrl = `${window.location.origin}${file.url}`;
+        } else {
+          // Relative path - add origin and leading slash
+          fileUrl = `${window.location.origin}/${file.url}`;
+        }
+        
         window.open(fileUrl, '_blank', 'noopener,noreferrer');
       } else {
         toast({

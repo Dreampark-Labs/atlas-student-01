@@ -42,7 +42,7 @@ export default function LandingPage() {
   // Redirect authenticated users to their most recent term
   useEffect(() => {
     if (!isLoaded || isRedirecting) return; // Wait for auth to load and prevent double redirects
-    
+
     if (isSignedIn && userId) {
       // If we have activeTerm data (either term or null)
       if (activeTerm !== undefined) {

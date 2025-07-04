@@ -38,13 +38,21 @@ interface ClassAssignmentsViewProps {
   classData: Doc<"classes">
   assignments: Doc<"assignments">[]
   userId: string
+  onTabChange?: (tab: string) => void
 }
 
-export function ClassAssignmentsView({ term, classData, assignments, userId }: ClassAssignmentsViewProps) {
+export function ClassAssignmentsView({ term, classData, assignments, userId, onTabChange }: ClassAssignmentsViewProps) {
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null)
   const [showDetailDialog, setShowDetailDialog] = useState(false)
   const [gradePredictor, setGradePredictor] = useState<{ [key: string]: string }>({})
+  const [activeTab, setActiveTab] = useState("assignments")
   const { settings, formatDate, formatTime } = useSettings()
+
+  // Handle tab changes and notify parent
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    onTabChange?.(tab)
+  }
 
   // Helper function to create a Date object from date and time strings
   const createDateTime = (dateStr: string, timeStr: string) => {

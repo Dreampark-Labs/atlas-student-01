@@ -9,7 +9,7 @@ import { api } from "@/convex/_generated/api";
 import { generateTermPath, isAllTermsId, createAllTermsSlug } from "@/lib/url-utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Id } from "@/convex/_generated/dataModel";
+import { Id, Doc } from "@/convex/_generated/dataModel";
 import {
   BookOpen,
   CheckSquare,
@@ -79,14 +79,21 @@ interface TermData {
   stats: TermStats;
 }
 
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  onClick?: () => void;
+}
+
 interface TermLayoutProps {
   children: React.ReactNode;
   currentTerm: TermData;
   activeView: string;
   pageTitle: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
-export function TermLayout({ children, currentTerm, activeView, pageTitle }: TermLayoutProps) {
+export function TermLayout({ children, currentTerm, activeView, pageTitle, breadcrumbs }: TermLayoutProps) {
   const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
   const userId = useAuthenticatedUserId();
@@ -308,15 +315,15 @@ export function TermLayout({ children, currentTerm, activeView, pageTitle }: Ter
     stats: term.stats
   })) || [];
   
-  // Convert current term to expected format
-  const convertedCurrentTerm = {
-    id: currentTerm._id,
-    _id: currentTerm._id,
+  // Convert current term to expected format for dialogs
+  const termForDialogs = {
+    id: currentTerm._id as string,
     name: currentTerm.name,
     year: currentTerm.year,
     season: currentTerm.season,
     isActive: currentTerm.isActive,
-    stats: currentTerm.stats
+    stats: currentTerm.stats,
+    _id: currentTerm._id as string
   };
 
   // No need to convert the current term - use it directly
@@ -481,15 +488,54 @@ export function TermLayout({ children, currentTerm, activeView, pageTitle }: Ter
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">{pageTitle}</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>
+                  <BreadcrumbLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowTermSelector(true);
+                    }}
+                    className="cursor-pointer hover:text-foreground"
+                  >
                     {currentTerm.name}
-                  </BreadcrumbPage>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
+                {breadcrumbs && breadcrumbs.length > 0 ? (
+                  // Custom breadcrumbs for complex pages like class assignments
+                  breadcrumbs.map((breadcrumb, index) => (
+                    <div key={index} className="flex items-center">
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        {breadcrumb.href || breadcrumb.onClick ? (
+                          <BreadcrumbLink
+                            href={breadcrumb.href || "#"}
+                            onClick={breadcrumb.onClick ? (e) => {
+                              e.preventDefault();
+                              breadcrumb.onClick?.();
+                            } : undefined}
+                            className="cursor-pointer hover:text-foreground"
+                          >
+                            {breadcrumb.label}
+                          </BreadcrumbLink>
+                        ) : (
+                          <BreadcrumbPage>
+                            {breadcrumb.label}
+                          </BreadcrumbPage>
+                        )}
+                      </BreadcrumbItem>
+                    </div>
+                  ))
+                ) : (
+                  // Default breadcrumb for simple pages
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>
+                        {pageTitle}
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -505,7 +551,7 @@ export function TermLayout({ children, currentTerm, activeView, pageTitle }: Ter
           open={showTermSelector}
           onOpenChange={setShowTermSelector}
           terms={convertedTerms}
-          currentTerm={convertedCurrentTerm}
+          currentTerm={currentTerm}
           onTermChange={handleTermChange}
           onCreateTerm={async () => {}} // Not used in this context
         />
@@ -533,7 +579,7 @@ export function TermLayout({ children, currentTerm, activeView, pageTitle }: Ter
         <AddClassDialog
           open={showAddClass}
           onOpenChange={setShowAddClass}
-          currentTerm={convertedCurrentTerm}
+          currentTerm={termForDialogs}
           terms={convertedTerms}
         />
       )}
@@ -542,7 +588,7 @@ export function TermLayout({ children, currentTerm, activeView, pageTitle }: Ter
         <AddAssignmentsDialog
           open={showAddAssignments}
           onOpenChange={setShowAddAssignments}
-          currentTerm={convertedCurrentTerm}
+          currentTerm={currentTerm as Doc<"terms">}
           userId={userId || ""}
           terms={convertedTerms}
           classes={classes || []}

@@ -11,13 +11,21 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { ClassAssignmentsView } from "@/components/class-assignments-view";
 import { TermLayout } from "@/components/term-layout";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+// Tab label mapping
+const TAB_LABELS = {
+  assignments: "All Assignments",
+  categories: "By Category",
+  predictor: "Grade Predictor"
+};
 
 export default function ClassAssignments() {
   const params = useParams();
   const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
   const userId = useAuthenticatedUserId();
+  const [currentTab, setCurrentTab] = useState("assignments");
   
   const termSlug = params.termSlug as string;
   const classSlug = params.classSlug as string;
@@ -75,6 +83,27 @@ export default function ClassAssignments() {
       router.push(`${termPath}/classes`);
     }
   };
+
+  // Handle tab changes
+  const handleTabChange = (tab: string) => {
+    setCurrentTab(tab);
+  };
+
+  // Create breadcrumbs for class assignments page
+  const breadcrumbs = [
+    {
+      label: "My Classes",
+      onClick: handleBackToClasses
+    },
+    {
+      label: classData?.name || "Class",
+      // No click - this is the current class
+    },
+    {
+      label: TAB_LABELS[currentTab as keyof typeof TAB_LABELS] || currentTab,
+      // No click - this is the current tab
+    }
+  ];
   // Redirect to sign-in if not authenticated
   if (isLoaded && !isSignedIn) {
     return <RedirectToSignIn />;
@@ -122,6 +151,7 @@ export default function ClassAssignments() {
       currentTerm={term}
       activeView="class-detail"
       pageTitle={`${classData.name} - Assignments`}
+      breadcrumbs={breadcrumbs}
     >
       <div className="space-y-6">
         {/* Back button */}
@@ -143,6 +173,7 @@ export default function ClassAssignments() {
           classData={classData}
           assignments={assignments}
           userId={userId}
+          onTabChange={handleTabChange}
         />
       </div>
     </TermLayout>

@@ -41,6 +41,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { PageTransition } from "@/components/ui/page-transition";
+import { TabTransition } from "@/components/ui/tab-transition";
 
 export default function SettingsTabPage() {
   const router = useRouter();
@@ -103,7 +105,8 @@ export default function SettingsTabPage() {
   ];
 
   return (
-    <SidebarProvider>
+    <PageTransition>
+      <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <SidebarMenu>
@@ -330,10 +333,13 @@ export default function SettingsTabPage() {
           </div>
 
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-6">
-            <Settings activeTab={activeTab} />
+            <TabTransition tabKey={activeTab}>
+              <Settings activeTab={activeTab} />
+            </TabTransition>
           </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </PageTransition>
   );
 }

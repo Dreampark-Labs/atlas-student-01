@@ -30,6 +30,8 @@ import { GradeCalculator } from "@/lib/grade-calculator"
 import { categorizeAssignmentType, findMatchingGradingCategory } from "@/lib/assignment-categorization"
 import { SmartPrioritizer } from "@/lib/smart-prioritizer"
 import { useSettings } from "@/hooks/use-settings"
+import { TabTransition } from "@/components/ui/tab-transition";
+import { StaggerContainer, StaggerItem } from "@/components/ui/page-transition";
 
 interface ClassAssignmentsViewProps {
   term: Doc<"terms">
@@ -434,7 +436,8 @@ export function ClassAssignmentsView({ term, classData, assignments, userId }: C
         </TabsList>
 
         <TabsContent value="assignments" className="space-y-4">
-          <div className="grid gap-4">
+          <TabTransition tabKey="assignments">
+            <StaggerContainer className="grid gap-4">
             {prioritizedAssignments.map((assignment) => {
               const priorityScores = SmartPrioritizer.getPriorityScores([assignment])
               const priorityScore = priorityScores[0]?.score || 0
@@ -506,10 +509,12 @@ export function ClassAssignmentsView({ term, classData, assignments, userId }: C
                 </Card>
               )
             })}
-          </div>
+            </StaggerContainer>
+          </TabTransition>
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-4">
+          <TabTransition tabKey="categories">
           <div className="grid gap-4">
             {Object.entries(assignmentStats).map(([category, stats]) => (
               <Card key={category}>
@@ -569,9 +574,11 @@ export function ClassAssignmentsView({ term, classData, assignments, userId }: C
               </Card>
             ))}
           </div>
+          </TabTransition>
         </TabsContent>
 
         <TabsContent value="predictor" className="space-y-4">
+          <TabTransition tabKey="predictor">
           <Card>
             <CardHeader>
               <CardTitle>Grade Predictor</CardTitle>
@@ -617,6 +624,7 @@ export function ClassAssignmentsView({ term, classData, assignments, userId }: C
               </div>
             </CardContent>
           </Card>
+          </TabTransition>
         </TabsContent>
       </Tabs>
 

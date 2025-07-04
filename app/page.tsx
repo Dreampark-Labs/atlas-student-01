@@ -26,6 +26,7 @@ import {
 import { api } from "@/convex/_generated/api";
 import { useAuthenticatedUserId } from "@/lib/user";
 import { generateTermPath } from "@/lib/url-utils";
+import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/page-transition";
 
 export default function LandingPage() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -87,9 +88,10 @@ export default function LandingPage() {
   // If we reach here, user is not signed in - show landing page
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #f8f9fd, #eef1f7)' }}>
+    <PageTransition className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <StaggerItem>
+        <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
         <div className="container mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -125,28 +127,36 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
+      </StaggerItem>
 
       {/* Hero Section */}
-      <section className="py-24 px-6">
+      <StaggerContainer className="py-24 px-6">
         <div className="container mx-auto text-center max-w-4xl">
-          <div 
-            className="inline-flex items-center px-3 py-1.5 mb-8 text-sm font-semibold rounded-full"
-            style={{ backgroundColor: '#e0e7ff', color: '#3730a3' }}
-          >
-            <Zap className="w-3 h-3 mr-1" />
-            Streamline Your Academic Journey
-          </div>
+          <StaggerItem>
+            <div 
+              className="inline-flex items-center px-3 py-1.5 mb-8 text-sm font-semibold rounded-full"
+              style={{ backgroundColor: '#e0e7ff', color: '#3730a3' }}
+            >
+              <Zap className="w-3 h-3 mr-1" />
+              Streamline Your Academic Journey
+            </div>
+          </StaggerItem>
           
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-8 text-gray-900 leading-tight">
-            Master Your Academic Success
-          </h1>
+          <StaggerItem>
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-8 text-gray-900 leading-tight">
+              Master Your Academic Success
+            </h1>
+          </StaggerItem>
           
-          <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Transform how you track assignments, manage grades, and organize your academic life. 
-            Atlas Student is your comprehensive productivity platform for academic excellence.
-          </p>
+          <StaggerItem>
+            <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+              Transform how you track assignments, manage grades, and organize your academic life. 
+              Atlas Student is your comprehensive productivity platform for academic excellence.
+            </p>
+          </StaggerItem>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+          <StaggerItem>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
             <Button 
               size="lg" 
               onClick={() => router.push("/sign-up")}
@@ -165,9 +175,11 @@ export default function LandingPage() {
               Sign In
             </Button>
           </div>
+          </StaggerItem>
 
-          {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm text-gray-500 mb-20">
+          <StaggerItem>
+            {/* Trust Indicators */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm text-gray-500 mb-20">
             <div className="flex items-center">
               <Shield className="w-4 h-4 mr-2" />
               Secure & Private
@@ -181,8 +193,9 @@ export default function LandingPage() {
               Built for Students
             </div>
           </div>
+          </StaggerItem>
         </div>
-      </section>
+      </StaggerContainer>
 
       {/* Features Grid */}
       <section className="py-24 px-6 bg-white">
@@ -309,6 +322,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </PageTransition>
   );
 }

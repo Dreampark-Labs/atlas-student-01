@@ -46,6 +46,7 @@
     "cmdk": "latest",
     "convex": "^1.25.0",
     "date-fns": "3.6.0",
+    "framer-motion": "^12.23.0",
     "lucide-react": "^0.454.0",
     "next": "^15.1.3",
     "next-themes": "latest",

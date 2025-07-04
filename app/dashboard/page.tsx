@@ -28,6 +28,8 @@ import { ClassManagement } from "@/components/class-management";
 import { GradeTracker } from "@/components/grade-tracker";
 import { SubmittedAssignments } from "@/components/submitted-assignments";
 import { TodoList } from "@/components/todo-list";
+import { PageTransition, FadeTransition } from "@/components/ui/page-transition";
+import { TabFadeTransition } from "@/components/ui/tab-transition";
 import { AddClassDialog } from "@/components/add-class-dialog";
 import { AddAssignmentDialog } from "@/components/add-assignment-dialog";
 import { AddAssignmentsDialog } from "@/components/add-assignments-dialog";
@@ -612,8 +614,8 @@ export default function Dashboard() {
 
   return (
     <ErrorBoundary>
-      <SidebarProvider>
-        <Sidebar variant="inset">
+      <SidebarProvider defaultOpen>
+        <Sidebar variant="inset" className="transition-none">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -768,7 +770,7 @@ export default function Dashboard() {
           <SidebarRail />
         </Sidebar>
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <header className="flex h-16 shrink-0 items-center gap-2 group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
@@ -793,8 +795,9 @@ export default function Dashboard() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             {/* Main Content */}
-            {activeView === "dashboard" && (
-              <div className="space-y-6">
+            <TabFadeTransition tabKey={activeView}>
+              {activeView === "dashboard" && (
+                <div className="space-y-6">
                 {/* Welcome Banner */}
                 {(activeTerm || isAllTermsView) && (
                   <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-blue-500/5">
@@ -1265,10 +1268,12 @@ export default function Dashboard() {
                   </Card>
                 </div>
               </div>
-            )}
+              )}
+            </TabFadeTransition>
 
             {/* My Classes View */}
-            {activeView === "classes" && (
+            <TabFadeTransition tabKey={activeView}>
+              {activeView === "classes" && (
               <div className="space-y-4">
                 <Card>
                   <CardHeader>
@@ -1297,10 +1302,12 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
-            )}
+              )}
+            </TabFadeTransition>
 
             {/* Grade Tracker View */}
-            {activeView === "grade-tracker" && (
+            <TabFadeTransition tabKey={activeView}>
+              {activeView === "grade-tracker" && (
               <div className="space-y-4">
                 <Card>
                   <CardHeader>
@@ -1313,10 +1320,12 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
-            )}
+              )}
+            </TabFadeTransition>
 
             {/* Submitted Work View */}
-            {activeView === "submitted-work" && (
+            <TabFadeTransition tabKey={activeView}>
+              {activeView === "submitted-work" && (
               <div className="space-y-4">
                 <Card>
                   <CardHeader>
@@ -1327,33 +1336,39 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
-            )}
+              )}
+            </TabFadeTransition>
 
-            {activeView === "assignment-management" && activeTerm && (
-              <AssignmentManagement
-                terms={convertConvexTermsToTerms(terms)}
-                currentTerm={convertConvexTermToTerm(activeTerm)!}
-                onTermChange={async (termId: string) => {
-                  const termIdTyped = termId as Id<"terms">;
-                  await handleTermChange(termIdTyped);
-                }}
-                userId={userId}
-              />
-            )}
-
-            {activeView === "class-management" && activeTerm && (
-              <div className="space-y-4">
-                <ClassManagement
+            <TabFadeTransition tabKey={activeView}>
+              {activeView === "assignment-management" && activeTerm && (
+                <AssignmentManagement
                   terms={convertConvexTermsToTerms(terms)}
                   currentTerm={convertConvexTermToTerm(activeTerm)!}
-                  onTermChange={handleTermChange}
+                  onTermChange={async (termId: string) => {
+                    const termIdTyped = termId as Id<"terms">;
+                    await handleTermChange(termIdTyped);
+                  }}
                   userId={userId}
                 />
-              </div>
-            )}
+              )}
+            </TabFadeTransition>
+
+            <TabFadeTransition tabKey={activeView}>
+              {activeView === "class-management" && activeTerm && (
+                <div className="space-y-4">
+                  <ClassManagement
+                    terms={convertConvexTermsToTerms(terms)}
+                    currentTerm={convertConvexTermToTerm(activeTerm)!}
+                    onTermChange={handleTermChange}
+                    userId={userId}
+                  />
+                </div>
+              )}
+            </TabFadeTransition>
 
             {/* All Terms View */}
-            {isAllTermsView && (
+            <TabFadeTransition tabKey={isAllTermsView ? "all-terms" : activeView}>
+              {isAllTermsView && (
               <div className="space-y-6">
                 <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-blue-500/5">
                   <CardHeader>
@@ -1453,7 +1468,8 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
-            )}
+              )}
+            </TabFadeTransition>
           </div>
         </SidebarInset>
       </SidebarProvider>

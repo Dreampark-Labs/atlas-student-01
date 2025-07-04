@@ -92,3 +92,83 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Smooth animations and transitions */
+@layer components {
+  /* Card hover animations */
+  .card-hover {
+    @apply transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* Button animations */
+  .button-hover {
+    @apply transition-all duration-200 ease-out hover:scale-105 active:scale-95;
+  }
+  
+  /* Fade in animation */
+  .fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Slide up animation */
+  .slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+  
+  /* Pulse animation for loading states */
+  .pulse-gentle {
+    animation: pulseGentle 2s infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGentle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Page transition styles */
+.page-transition {
+  @apply transition-all duration-300 ease-out;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove sidebar animations for smooth navigation */
+[data-sidebar] {
+  transition: none !important;
+}
+
+.sidebar {
+  transition: none !important;
+}
+
+[data-sidebar-inset] {
+  transition: none !important;
+}

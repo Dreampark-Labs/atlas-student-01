@@ -36,7 +36,9 @@ export default function RootLayout({
         <ErrorBoundary>
           <ConvexClerkProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-              {children}
+              <div className="min-h-screen transition-colors duration-300">
+                {children}
+              </div>
               <Toaster />
             </ThemeProvider>
           </ConvexClerkProvider>

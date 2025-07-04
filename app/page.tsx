@@ -3,7 +3,7 @@
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ export default function LandingPage() {
   const { isSignedIn, isLoaded } = useAuth();
   const router = useRouter();
   const userId = useAuthenticatedUserId();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Query for active term to redirect authenticated users
   const activeTerm = useQuery(
@@ -40,40 +41,50 @@ export default function LandingPage() {
 
   // Redirect authenticated users to their most recent term
   useEffect(() => {
-    if (isLoaded && isSignedIn && activeTerm && userId) {
-      const termPath = generateTermPath(activeTerm.name, activeTerm._id);
-      router.replace(termPath);
-    } else if (isLoaded && isSignedIn && activeTerm === null && userId) {
-      // User has no terms yet, redirect to dashboard for first-time setup
-      router.replace('/dashboard');
+    if (!isLoaded || isRedirecting) return; // Wait for auth to load and prevent double redirects
+    
+    if (isSignedIn && userId) {
+      // If we have activeTerm data (either term or null)
+      if (activeTerm !== undefined) {
+        setIsRedirecting(true);
+        if (activeTerm) {
+          // User has an active term, redirect to it
+          const termPath = generateTermPath(activeTerm.name, activeTerm._id);
+          router.replace(termPath);
+        } else {
+          // User has no terms yet, redirect to dashboard for first-time setup
+          router.replace('/dashboard');
+        }
+      }
+      // If activeTerm is still undefined, keep waiting for the query
     }
-  }, [isLoaded, isSignedIn, activeTerm, userId, router]);
+  }, [isLoaded, isSignedIn, activeTerm, userId, router, isRedirecting]);
 
   // Show loading state while checking auth or redirecting
-  if (!isLoaded || (isSignedIn && (activeTerm === undefined || userId === undefined))) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <p className="text-sm text-muted-foreground">
-            {!isLoaded ? "Loading..." : "Redirecting to your dashboard..."}
-          </p>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // If user is signed in but we get here, there might be an issue
-  if (isSignedIn) {
+  // Show loading state while waiting for user data and term query
+  if (isSignedIn && (userId === undefined || activeTerm === undefined || isRedirecting)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <p className="text-sm text-muted-foreground">Redirecting...</p>
+          <p className="text-sm text-muted-foreground">Redirecting to your dashboard...</p>
         </div>
       </div>
     );
   }
+
+  // If we reach here, user is not signed in - show landing page
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #f8f9fd, #eef1f7)' }}>

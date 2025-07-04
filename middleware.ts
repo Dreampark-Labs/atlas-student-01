@@ -21,13 +21,13 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   const { pathname } = req.nextUrl;
   
-  // For root path, let the page component handle the redirect to avoid middleware loops
-  if (pathname === "/") {
+  // Always allow public routes without any redirects
+  if (isPublicRoute(req)) {
     return NextResponse.next();
   }
   
-  // Always allow other public routes
-  if (isPublicRoute(req)) {
+  // For root path, let the page component handle the redirect to avoid middleware loops
+  if (pathname === "/") {
     return NextResponse.next();
   }
   

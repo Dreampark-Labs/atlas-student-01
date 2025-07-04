@@ -96,7 +96,8 @@ ehthumbs.db
 Thumbs.db
 
 # Convex
-convex/_generated/
+# Note: _generated files are included for Vercel deployment
+# convex/_generated/
 
 # Vercel
 .vercel

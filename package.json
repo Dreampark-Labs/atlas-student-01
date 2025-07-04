@@ -1,12 +1,14 @@
 {
-  "name": "my-v0-project",
+  "name": "atlas-student-tracker",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "convex deploy && next build",
+    "build": "convex deploy --cmd 'npm run build:next'",
+    "build:next": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "convex": "convex dev"
   },
   "dependencies": {
     "@clerk/clerk-react": "latest",

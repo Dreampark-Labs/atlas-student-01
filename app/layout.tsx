@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { ConvexClerkProvider } from "@/components/providers/convex-clerk-provider"
 import { ErrorBoundary } from "@/components/error-boundary"
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,6 +41,8 @@ export default function RootLayout({
             </ThemeProvider>
           </ConvexClerkProvider>
         </ErrorBoundary>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

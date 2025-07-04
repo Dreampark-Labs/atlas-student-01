@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export function ClassManagement({
   onTermChange,
   userId,
 }: ClassManagementProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("active");
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
@@ -150,9 +152,9 @@ export function ClassManagement({
             classItem.name,
             classItem._id
           );
-          window.location.href = classPath;
+          router.push(classPath);
         }
-      }, [classItem.termId, classItem.name, classItem._id, terms, currentTerm]);
+      }, [classItem.termId, classItem.name, classItem._id, terms, currentTerm, router]);
 
       return (
         <Card

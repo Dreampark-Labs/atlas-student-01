@@ -11,6 +11,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { ClassAssignmentsView } from "@/components/class-assignments-view";
 import { TermLayout } from "@/components/term-layout";
 import { Button } from "@/components/ui/button";
+import { ClassDetailTransition } from "@/components/ui/page-transition";
 import { useEffect, useState } from "react";
 
 // Tab label mapping
@@ -109,30 +110,17 @@ export default function ClassAssignments() {
     return <RedirectToSignIn />;
   }
 
-  // Show loading state
-  if (!isLoaded || userId === undefined) {
+  // Show loading state with transition
+  if (!isLoaded || userId === undefined || userId === null || term === undefined || classData === undefined || assignments === undefined) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+      <ClassDetailTransition>
+        <div className="flex h-screen w-full items-center justify-center">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <p className="text-sm text-muted-foreground">Loading class...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
-
-  if (userId === null) {
-    return <RedirectToSignIn />;
-  }
-
-  if (term === undefined || classData === undefined || assignments === undefined) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="text-sm text-muted-foreground">Loading class...</p>
-        </div>
-      </div>
+      </ClassDetailTransition>
     );
   }
 
@@ -147,35 +135,37 @@ export default function ClassAssignments() {
   }
 
   return (
-    <TermLayout
-      currentTerm={term}
-      activeView="class-detail"
-      pageTitle={`${classData.name} - Assignments`}
-      breadcrumbs={breadcrumbs}
-    >
-      <div className="space-y-6">
-        {/* Back button */}
-        <div className="flex items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleBackToClasses}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Classes</span>
-          </Button>
-        </div>
+    <ClassDetailTransition>
+      <TermLayout
+        currentTerm={term}
+        activeView="class-detail"
+        pageTitle={`${classData.name} - Assignments`}
+        breadcrumbs={breadcrumbs}
+      >
+        <div className="space-y-6">
+          {/* Back button */}
+          <div className="flex items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBackToClasses}
+              className="flex items-center space-x-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Classes</span>
+            </Button>
+          </div>
 
-        {/* Class assignments view */}
-        <ClassAssignmentsView
-          term={term}
-          classData={classData}
-          assignments={assignments}
-          userId={userId}
-          onTabChange={handleTabChange}
-        />
-      </div>
-    </TermLayout>
+          {/* Class assignments view */}
+          <ClassAssignmentsView
+            term={term}
+            classData={classData}
+            assignments={assignments}
+            userId={userId}
+            onTabChange={handleTabChange}
+          />
+        </div>
+      </TermLayout>
+    </ClassDetailTransition>
   );
 }
